@@ -3,7 +3,6 @@ package edu.uci.ics.fabflixmobile;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -18,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,22 +26,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import edu.uci.ics.fabflixmobile.login.MyHTTPRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
 /**
  * A login screen that offers login via email/password.
@@ -59,10 +50,12 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    // private Context thisAppContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // thisAppContext.getApplicationContext();
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -304,7 +297,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
         private final String mPassword;
@@ -317,24 +310,29 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+            ArrayList<NameValuePair> postParameters = new ArrayList<>();
             postParameters.add(new BasicNameValuePair("username", mEmail));
             postParameters.add(new BasicNameValuePair("password", mPassword));
-            String response = null;
+            // TODO: change this to the right AWS servlet
+            String url = "http://54.200.163.127:8080/fabflix/Wyd70lJX0W/A_LoginControl";
             try {
-                response = MyHTTPRequest.executeHttpPost("<target page url>", postParameters);
-                String res = response.toString();
-                res= res.replaceAll("\\s+","");
-                if(res.equals("LoginVerified"))
-                    return true;
-                else {
-                    errorMessage = "Sorry!! Incorrect Username or Password";
-                    return false;
+
+                JSONObject resultJson = MyHTTPRequest.executeHttpPost(url, postParameters);
+                String res = resultJson.getString("VerifiedResult");
+                switch (res){
+                    case "LoginVerified":
+                        return true;
+                    case "WrongUsername":
+                        errorMessage = "Incorrect Username!";
+                        return false;
+                    case "WrongPassword":
+                        errorMessage = "Incorrect Password!";
+                        return false;
                 }
             } catch (Exception e) {
                 errorMessage = "Error: " + e.toString();
-                return false;
             }
+            return false;
         }
 
         @Override
@@ -345,8 +343,19 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
             if (success) {
                 goToBlue();
             } else {
-                mPasswordView.setError(errorMessage);
-                mPasswordView.requestFocus();
+                switch (errorMessage) {
+                    case "Incorrect Username!":
+                        mEmailView.setError(errorMessage);
+                        mEmailView.requestFocus();
+                        break;
+                    case "Incorrect Password!":
+                        mPasswordView.setError(errorMessage);
+                        mPasswordView.requestFocus();
+                        break;
+                    default:
+                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        break;
+                }
             }
         }
 

@@ -2,6 +2,7 @@ package edu.uci.ics.fabflixmobile.login;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -15,10 +16,11 @@ import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONObject;
 
 public class MyHTTPRequest {
     /** The time it takes for our client to timeout */
-    public static final int HTTP_TIMEOUT = 30 * 1000; // milliseconds
+    private static final int HTTP_TIMEOUT = 15 * 1000; // milliseconds
 
     /** Single instance of our HttpClient */
     private static HttpClient mHttpClient;
@@ -46,9 +48,8 @@ public class MyHTTPRequest {
      * @param url The web address to post the request to
      * @param postParameters The parameters to send via the request
      * @return The result of the request
-     * @throws Exception
      */
-    public static String executeHttpPost(String url, ArrayList<NameValuePair> postParameters) throws Exception {
+    public static JSONObject executeHttpPost(String url, ArrayList<NameValuePair> postParameters) throws Exception {
         BufferedReader in = null;
         try {
             HttpClient client = getHttpClient();
@@ -57,17 +58,14 @@ public class MyHTTPRequest {
             request.setEntity(formEntity);
             HttpResponse response = client.execute(request);
             in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
+            StringBuilder  sb = new StringBuilder ("");
+            String line;
             String NL = System.getProperty("line.separator");
             while ((line = in.readLine()) != null) {
                 sb.append(line + NL);
             }
             in.close();
-
-            String result = sb.toString();
-            return result;
+            return new JSONObject(sb.toString().replaceAll("\\s+",""));
         } finally {
             if (in != null) {
                 try {
@@ -84,9 +82,8 @@ public class MyHTTPRequest {
      *
      * @param url The web address to post the request to
      * @return The result of the request
-     * @throws Exception
      */
-    public static String executeHttpGet(String url) throws Exception {
+    public static JSONObject executeHttpGet(String url) throws Exception {
         BufferedReader in = null;
         try {
             HttpClient client = getHttpClient();
@@ -95,16 +92,15 @@ public class MyHTTPRequest {
             HttpResponse response = client.execute(request);
             in = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
-            StringBuffer sb = new StringBuffer("");
-            String line = "";
+            StringBuilder  sb = new StringBuilder ("");
+            String line;
             String NL = System.getProperty("line.separator");
             while ((line = in.readLine()) != null) {
                 sb.append(line + NL);
             }
             in.close();
 
-            String result = sb.toString();
-            return result;
+            return new JSONObject(sb.toString().replaceAll("\\s+",""));
         } finally {
             if (in != null) {
                 try {
