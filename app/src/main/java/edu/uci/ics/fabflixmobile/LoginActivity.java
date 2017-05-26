@@ -62,8 +62,6 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
-
-        mPasswordView.setText(getResources().getString(R.string.prompt_password));
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -173,7 +171,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         // the progress spinner.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
+/*
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
             mLoginFormView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
@@ -181,7 +179,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
                 public void onAnimationEnd(Animator animation) {
                     mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
-            });
+            });*/
 
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mProgressView.animate().setDuration(shortAnimTime).alpha(
@@ -195,7 +193,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+//            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -252,14 +250,10 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
-    public void goToBlue(){
-        String msg = "Successfully Login";
-
-        Intent goToIntent = new Intent(this, BlueActivity.class);
-
-        goToIntent.putExtra("last_activity", "red");
+    public void goToSearch(){
+        String msg = "Successfully Logged in";
+        Intent goToIntent = new Intent(this, SearchActivity.class);
         goToIntent.putExtra("message", msg);
-
         startActivity(goToIntent);
     }
 
@@ -341,7 +335,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                goToBlue();
+                goToSearch();
             } else {
                 switch (errorMessage) {
                     case "Incorrect Username!":
