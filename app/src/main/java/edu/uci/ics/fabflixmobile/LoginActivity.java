@@ -310,8 +310,8 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
             // TODO: change this to the right AWS servlet
             String url = "http://54.200.163.127:8080/fabflix/Wyd70lJX0W/A_LoginControl";
             try {
-
-                JSONObject resultJson = MyHTTPRequest.executeHttpPost(url, postParameters);
+                String result = MyHTTPRequest.executeHttpPost(url, postParameters);
+                JSONObject resultJson = new JSONObject(result);
                 String res = resultJson.getString("VerifiedResult");
                 switch (res){
                     case "LoginVerified":

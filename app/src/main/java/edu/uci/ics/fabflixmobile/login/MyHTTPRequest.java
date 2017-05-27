@@ -16,7 +16,6 @@ import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.json.JSONObject;
 
 public class MyHTTPRequest {
     /** The time it takes for our client to timeout */
@@ -49,7 +48,7 @@ public class MyHTTPRequest {
      * @param postParameters The parameters to send via the request
      * @return The result of the request
      */
-    public static JSONObject executeHttpPost(String url, ArrayList<NameValuePair> postParameters) throws Exception {
+    public static String executeHttpPost(String url, ArrayList<NameValuePair> postParameters) throws Exception {
         BufferedReader in = null;
         try {
             HttpClient client = getHttpClient();
@@ -65,7 +64,7 @@ public class MyHTTPRequest {
                 sb.append(line + NL);
             }
             in.close();
-            return new JSONObject(sb.toString().replaceAll("\\s+",""));
+            return sb.toString().replaceAll("\\s+","");
         } finally {
             if (in != null) {
                 try {
@@ -83,7 +82,7 @@ public class MyHTTPRequest {
      * @param url The web address to post the request to
      * @return The result of the request
      */
-    public static JSONObject executeHttpGet(String url) throws Exception {
+    public static String executeHttpGet(String url) throws Exception {
         BufferedReader in = null;
         try {
             HttpClient client = getHttpClient();
@@ -99,8 +98,7 @@ public class MyHTTPRequest {
                 sb.append(line + NL);
             }
             in.close();
-
-            return new JSONObject(sb.toString().replaceAll("\\s+",""));
+            return sb.toString().replaceAll("\\s+","");
         } finally {
             if (in != null) {
                 try {
