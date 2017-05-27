@@ -3,10 +3,13 @@ package edu.uci.ics.fabflixmobile;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -25,6 +28,7 @@ public class SearchActivity extends ActionBarActivity {
     private String errorMessage;
     private String searchInput;
     private ArrayList<String> movieList;
+    private final String url = "http://54.200.163.127:8080/fabflix/Wyd70lJX0W/A_Search";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,17 +36,31 @@ public class SearchActivity extends ActionBarActivity {
 
         mEditText = (EditText) findViewById(R.id.search_edit_text);
         mListView = (ListView) findViewById(R.id.list_view);
-        movieList = new ArrayList<>();
+        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    movieList = new ArrayList<>();
+                    searchInput = mEditText.getText().toString();
+                    mSearchTask = new SearchTask();
+                    mSearchTask.execute(url);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     public void onClickSearch (View view) {
-        String url = "http://54.200.163.127:8080/fabflix/Wyd70lJX0W/A_Search";
+        movieList = new ArrayList<>();
         searchInput = mEditText.getText().toString();
         mSearchTask = new SearchTask();
         mSearchTask.execute(url);
     }
 
-    class SearchTask extends AsyncTask<String, Integer, Boolean> {
+    private class SearchTask extends AsyncTask<String, Integer, Boolean> {
         private Exception exception;
 
         @Override
@@ -54,6 +72,7 @@ public class SearchActivity extends ActionBarActivity {
 //                String result = MyHTTPRequest.executeHttpGet(URLs[0]);
                 JSONArray resultJson = new JSONArray(result);
                 if (resultJson.length() == 0){
+                    movieList.add("No Result");
                     return true;
                 }
                 else {
@@ -71,15 +90,9 @@ public class SearchActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Boolean empty) {
             mSearchTask = null;
-            if (empty) {
-                movieList = new ArrayList<>();
-                ArrayAdapter adapter = new ArrayAdapter(SearchActivity.this, android.R.layout.simple_list_item_1, movieList);
-                mListView.setAdapter(adapter);
-            }
-            else {
-                ArrayAdapter adapter = new ArrayAdapter(SearchActivity.this, android.R.layout.simple_list_item_1, movieList);
-                mListView.setAdapter(adapter);
-            }
+            ArrayAdapter adapter = new ArrayAdapter(SearchActivity.this, android.R.layout.simple_list_item_1, movieList);
+            mListView.setAdapter(adapter);
+
             if (exception != null) {
                 errorMessage = "Error: " + this.exception.toString();
                 Toast.makeText(SearchActivity.this, errorMessage, Toast.LENGTH_LONG).show();

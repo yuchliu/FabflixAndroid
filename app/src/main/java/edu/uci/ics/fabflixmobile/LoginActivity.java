@@ -3,6 +3,8 @@ package edu.uci.ics.fabflixmobile;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -238,6 +240,40 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this) {
+            @Override
+            public AlertDialog.Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    return super.setNegativeButton(text, listener);
+                } else {
+                    return super.setPositiveButton(text, listener);
+                }
+            }
+
+            @Override
+            public AlertDialog.Builder setNegativeButton(CharSequence text, DialogInterface.OnClickListener listener) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    return super.setPositiveButton(text, listener);
+                } else {
+                    return super.setNegativeButton(text, listener);
+                }
+            }
+        }
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LoginActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+
+
     }
 
     private interface ProfileQuery {
