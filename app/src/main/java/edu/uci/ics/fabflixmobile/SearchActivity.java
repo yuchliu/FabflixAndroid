@@ -59,11 +59,6 @@ public class SearchActivity extends ActionBarActivity {
 //                if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_DOWN) {
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     searchMovie();
-                    InputMethodManager inputManager = (InputMethodManager)
-                            getSystemService(SearchActivity.INPUT_METHOD_SERVICE);
-
-                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS);
                     return true;
                 }
                 return false;
@@ -74,8 +69,15 @@ public class SearchActivity extends ActionBarActivity {
     private void searchMovie (){
         movieList = new ArrayList<>();
         searchInput = mEditText.getText().toString();
-        mSearchTask = new SearchTask();
-        mSearchTask.execute(url);
+        if (!searchInput.equals("")) {
+            InputMethodManager inputManager = (InputMethodManager)
+                    getSystemService(SearchActivity.INPUT_METHOD_SERVICE);
+
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+            mSearchTask = new SearchTask();
+            mSearchTask.execute(url);
+        }
     }
 
     // toggle button's availability

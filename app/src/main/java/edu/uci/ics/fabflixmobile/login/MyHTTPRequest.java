@@ -64,7 +64,7 @@ public class MyHTTPRequest {
                 sb.append(line + NL);
             }
             in.close();
-            return sb.toString().replaceAll("\\s+","");
+            return sb.toString().trim();
         } finally {
             if (in != null) {
                 try {
@@ -98,7 +98,7 @@ public class MyHTTPRequest {
                 sb.append(line + NL);
             }
             in.close();
-            return sb.toString().replaceAll("\\s+","");
+            return sb.toString().trim();
         } finally {
             if (in != null) {
                 try {
