@@ -10,6 +10,7 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        setProperty("archivesBaseName", "fabflix")
     }
     buildTypes {
         release {
@@ -19,6 +20,11 @@ android {
         debug {
             debuggable true
         }
+/*        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                output.outputFile = file("$project.buildDir/outputs/apk/fabflix.apk")
+            }
+        }*/
     }
 }
 
